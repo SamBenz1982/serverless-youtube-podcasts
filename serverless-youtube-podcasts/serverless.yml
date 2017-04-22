@@ -14,7 +14,14 @@ functions:
     handler: handler.playlistFeed
     events:
       - http:
-          path: playlists/{id}
+          path: playlists/{playlist_id}
+          method: get
+  
+  videoPlaybackUrl:
+    handler: handler.videoPlaybackUrl
+    events:
+      - http:
+          path: playlists/{playlist_id}/videos/{video_id}
           method: get
 
 # Plugins

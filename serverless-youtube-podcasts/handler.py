@@ -15,7 +15,7 @@ from youtube_dl.utils import ExtractorError
 def playlistFeed(event, context):
 
     # TODO: validate playlist ID
-    playlist_id = event['pathParameters']['id']
+    playlist_id = event['pathParameters']['playlist_id']
     playlist_url = "https://www.youtube.com/playlist?list=%s" % playlist_id
 
     dl = YoutubeDL()
@@ -65,3 +65,32 @@ def playlistFeed(event, context):
             "statusCode": 404
         }
         return response
+
+
+def videoPlaybackUrl(event, context):
+
+    # TODO: validate playlist+video ID
+    playlist_id = event['pathParameters']['playlist_id']
+    video_id = event['pathParameters']['video_id']
+    video_url = "https://www.youtube.com/watch?v=%s" % video_id
+
+    dl = YoutubeDL()
+    dl.params['geturl'] = True
+    dl.params['dumpjson'] = True
+    ie = YoutubeIE(dl)
+
+    try:
+        # TODO: redirect with status code 302
+        result = ie.extract(video_url)
+        response = {
+            "statusCode": 200,
+            "body": result['formats'][-1]['url']
+        }
+        return response
+
+    except ExtractorError:
+        response = {
+            "statusCode": 404
+        }
+        return response
+
