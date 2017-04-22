@@ -1,0 +1,22 @@
+service: serverless-youtube-podcasts
+
+frameworkVersion: ">=1.0.0 <2.0.0"
+
+# Provider
+provider:
+  name: aws
+  runtime: python2.7
+
+# Functions 
+functions:
+  
+  playlistFeed:
+    handler: handler.playlistFeed
+    events:
+      - http:
+          path: playlists/{id}
+          method: get
+
+# Plugins
+plugins:
+  - serverless-python-requirements

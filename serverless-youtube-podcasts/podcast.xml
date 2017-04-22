@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
+  <channel>
+    <title>{{ title }}</title>
+    <description />
+    <link>{{ link }}</link>
+    <generator>{{ generator }}</generator>
+    <lastBuildDate>{{ lastBuildDate }}</lastBuildDate>
+    <pubDate>{{ lastBuildDate }}</pubDate>
+    <itunes:subtitle>{{ title }}</itunes:subtitle>
+    <itunes:summary />
+    <itunes:explicit>yes</itunes:explicit>
+    <itunes:category text="{{ category }}" />
+    <itunes:image href="{{ thumbnail }}" />
+    <media:thumbnail url="{{ thumbnail }}" />
+    
+    {% for item in items %}
+    <item>
+      <title>{{ item.title }}</title>
+      <description></description>
+      <link>{{ item.link }}</link>
+      <pubDate>{{ item.pubDate }}</pubDate>
+      <guid isPermaLink="true">{{ item.link }}</guid>
+      <enclosure url="{{ item.videoUrl }}" length="{{ item.videoLength }}" type="{{ item.videoType }}" />
+      <media:content url="{{ item.videoUrl }}" fileSize="{{ item.videoLength }}" type="{{ item.videoType }}" />
+      <itunes:subtitle>{{ item.title }}</itunes:subtitle>
+      <itunes:summary />
+      <itunes:duration>{{ item.duration }}</itunes:duration>
+    </item>
+    {% endfor %}
+
+  </channel>
+</rss>
