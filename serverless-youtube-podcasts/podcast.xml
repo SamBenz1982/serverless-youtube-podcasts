@@ -6,7 +6,7 @@
     <link>{{ link }}</link>
     <generator>{{ generator }}</generator>
     <lastBuildDate>{{ lastBuildDate }}</lastBuildDate>
-    <pubDate>{{ lastBuildDate }}</pubDate>
+    <pubDate>{{ pubDate }}</pubDate>
     <itunes:subtitle>{{ title }}</itunes:subtitle>
     <itunes:summary />
     <itunes:explicit>yes</itunes:explicit>
