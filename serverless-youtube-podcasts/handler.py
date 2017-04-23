@@ -15,7 +15,7 @@ from youtube_dl.utils import ExtractorError
 def playlistFeed(event, context):
 
     # TODO: validate playlist ID
-    playlist_id = event['pathParameters']['playlist_id']
+    playlist_id = event['pathParameters']['id']
     playlist_url = "https://www.youtube.com/playlist?list=%s" % playlist_id
 
     dl = YoutubeDL()
@@ -44,10 +44,10 @@ def playlistFeed(event, context):
                 "link": "https://www.youtube.com/watch?v=%s" % video_id,
                 "pubDate": formatdate(time.time()),
                 "videoLength": "0",
-                "videoUrl": "/playlists/%s/videos/%s" % (playlist_id, video_id),
+                "videoUrl": "/videos/%s" % video_id,
                 "videoType": "video/mp4",
                 "duration": "00:00:00",
-                "thumbnail": "/playlists/%s/videos/%s/thumbnail" % (playlist_id, video_id)
+                "thumbnail": "/videos/%s/thumbnail" % video_id
             }
             metadata["items"].append(item)
 
@@ -69,9 +69,8 @@ def playlistFeed(event, context):
 
 def videoPlaybackUrl(event, context):
 
-    # TODO: validate playlist+video ID
-    playlist_id = event['pathParameters']['playlist_id']
-    video_id = event['pathParameters']['video_id']
+    # TODO: validate video ID
+    video_id = event['pathParameters']['id']
     video_url = "https://www.youtube.com/watch?v=%s" % video_id
 
     dl = YoutubeDL()
