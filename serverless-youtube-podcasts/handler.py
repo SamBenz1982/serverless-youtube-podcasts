@@ -82,8 +82,10 @@ def videoPlaybackUrl(event, context):
         # TODO: redirect with status code 302
         result = ie.extract(video_url)
         response = {
-            "statusCode": 200,
-            "body": result['formats'][-1]['url']
+            "statusCode": 302,
+            "headers": {
+                "Location" : result['formats'][-1]['url']
+            }
         }
         return response
 

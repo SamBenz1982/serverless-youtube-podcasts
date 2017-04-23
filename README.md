@@ -37,7 +37,9 @@ Active and verify:
 
 ### Install Serverless Framework
 
-npm install serverless -g # (currently 1.11)
+To install the serverless framework (currently version 1.11)
+
+    npm install serverless -g
 
 ### Deploy
 
@@ -74,7 +76,9 @@ Deploy:
       playlistFeed: serverless-youtube-podcasts-dev-playlistFeed
       videoPlaybackUrl: serverless-youtube-podcasts-dev-videoPlaybackUrl
 
-Debug:
+### Testing
+
+Testing the playlist feed:
 
     http https://---.execute-api.eu-west-1.amazonaws.com/dev/playlists/PLEx5khR4g7PJELLTYwXZHcimWAwTUaWGA
 
@@ -135,12 +139,35 @@ Debug:
     </channel>
     </rss>
 
-### Testing locally
+Testing the video playback URL redirection:
 
-Install required python dependencies (populates .requirements/ directory)
+    http https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M
+    
+    HTTP/1.1 302 Found
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json
+    Date: Sun, 23 Apr 2017 22:04:40 GMT
+    Location: https://r4---sn-4g5e6n7k.googlevideo.com/videoplayback?mn=sn-4g5e6n7k&mm=31&ipbits=0&key=yt6&id=o-AGPKuVqRoJBISZUwl26_
+    TfPPJ59zGzg3_UdW6L5uFCpz&ip=34.253.141.39&pl=24&mime=video%2Fmp4&dur=1844.709&mv=u&source=youtube&ms=au&mt=1492984941&signature=
+    C928E8ECFED9C0DAAFF8FECEFFD348C8FA3571FD.04C0D3F713BEC75552D078214F2D737899F51CEE&requiressl=yes&ratebypass=yes&sparams=dur%2Cei
+    %2Cid%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cexpire&expire=149300
+    6679&upn=UpJTU8kuLfw&lmt=1471139901220366&itag=22&ei=9iT9WKL-MoO1cM70hagG
+    Via: 1.1 0655b6a9cdccd22beaf4b524985b38ab.cloudfront.net (CloudFront)
+    X-Amz-Cf-Id: xl59RZV4hhcgsRiouF0AToYpfw0IEWT7JlgDbta-1HY19S-awJEENA==
+    X-Amzn-Trace-Id: sampled=0;root=1-58fd24f6-497e60822240fc79e2ce4746
+    X-Cache: Miss from cloudfront
+    x-amzn-RequestId: d83799f7-2870-11e7-bb26-7fafe85cc082
+
+### Workflow for testing locally
+
+Install required python dependencies (populates `.requirements/` directory)
 
     sls requirements install
 
+Invoke functions:
+
     sls invoke local --function playlistFeed --path test_playlistFeed.json
 
-    sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl.json<?xml version="1.0" encoding="utf-8"?>
+    sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl.json
+    
