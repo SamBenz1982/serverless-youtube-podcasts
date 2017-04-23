@@ -17,6 +17,7 @@ def playlistFeed(event, context):
     # TODO: validate playlist ID
     playlist_id = event['pathParameters']['id']
     playlist_url = "https://www.youtube.com/playlist?list=%s" % playlist_id
+    url_path_prefix = os.environ['URL_PATH_PREFIX'] # /dev
 
     dl = YoutubeDL()
     dl.params['extract_flat'] = True
@@ -44,10 +45,10 @@ def playlistFeed(event, context):
                 "link": "https://www.youtube.com/watch?v=%s" % video_id,
                 "pubDate": formatdate(time.time()),
                 "videoLength": "0",
-                "videoUrl": "/videos/%s" % video_id,
+                "videoUrl": "%s/videos/%s" % (url_path_prefix, video_id),
                 "videoType": "video/mp4",
                 "duration": "00:00:00",
-                "thumbnail": "/videos/%s/thumbnail" % video_id
+                "thumbnail": "%s/videos/%s/thumbnail" % (url_path_prefix, video_id)
             }
             metadata["items"].append(item)
 
@@ -94,4 +95,3 @@ def videoPlaybackUrl(event, context):
             "statusCode": 404
         }
         return response
-

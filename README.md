@@ -114,8 +114,8 @@ Testing the playlist feed:
         <link>https://www.youtube.com/watch?v=GAFZcYlO5S0</link>
         <pubDate>Sat, 22 Apr 2017 19:34:01 -0000</pubDate>
         <guid isPermaLink="true">https://www.youtube.com/watch?v=GAFZcYlO5S0</guid>
-        <enclosure url="/videos/GAFZcYlO5S0" length="0" type="video/mp4" />
-        <media:content url="/videos/GAFZcYlO5S0" fileSize="0" type="video/mp4" />
+        <enclosure url="/dev/videos/GAFZcYlO5S0" length="0" type="video/mp4" />
+        <media:content url="/dev/videos/GAFZcYlO5S0" fileSize="0" type="video/mp4" />
         <itunes:subtitle>GOTO 2014 • Software Architecture vs. Code • Simon Brown</itunes:subtitle>
         <itunes:summary />
         <itunes:duration>00:00:00</itunes:duration>
@@ -129,8 +129,8 @@ Testing the playlist feed:
         <link>https://www.youtube.com/watch?v=Xh43D4E2e2M</link>
         <pubDate>Sat, 22 Apr 2017 19:34:01 -0000</pubDate>
         <guid isPermaLink="true">https://www.youtube.com/watch?v=Xh43D4E2e2M</guid>
-        <enclosure url="/videos/Xh43D4E2e2M" length="0" type="video/mp4" />
-        <media:content url="/videos/Xh43D4E2e2M" fileSize="0" type="video/mp4" />
+        <enclosure url="/dev/videos/Xh43D4E2e2M" length="0" type="video/mp4" />
+        <media:content url="/dev/videos/Xh43D4E2e2M" fileSize="0" type="video/mp4" />
         <itunes:subtitle>GOTO 2015 • Mobile-First Architectures • Alexander Stigsen</itunes:subtitle>
         <itunes:summary />
         <itunes:duration>00:00:00</itunes:duration>
