@@ -57,6 +57,9 @@ def playlistFeed(event, context):
         template = env.get_template("podcast.xml")
         response = {
             "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/rss+xml; charset=UTF-8"
+            },
             "body": template.render(metadata)
         }
         return response
