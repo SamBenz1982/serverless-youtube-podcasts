@@ -2,6 +2,10 @@ service: serverless-youtube-podcasts
 
 frameworkVersion: ">=1.0.0 <2.0.0"
 
+package:
+  exclude:
+    - node_modules/**
+    
 # Provider
 provider:
   name: aws
