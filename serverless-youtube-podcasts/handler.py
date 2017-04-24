@@ -1,6 +1,8 @@
 import os
 import sys
 import time
+import json
+import boto3
 
 # add .requirements/ to the Python search path
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -98,3 +100,56 @@ def videoPlaybackUrl(event, context):
             "statusCode": 404
         }
         return response
+
+
+def updateVideo(event, context):
+
+    # TODO: validate video ID
+    video_id = event['video_id']
+    video_url = "https://www.youtube.com/watch?v=%s" % video_id
+
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+
+    dl = YoutubeDL()
+    dl.params['geturl'] = True
+    dl.params['dumpjson'] = True
+    ie = YoutubeIE(dl)
+
+    try:
+        # Retrieve video metadata
+        result = ie.extract(video_url)
+
+        # Create (or overwrite) existing item in DynamoDB
+        item = {
+            'id': video_id,
+            'age_limit': result['age_limit'],
+            'description': result['description'],
+            'duration': result['duration'],
+            'license': result['license'],
+            'title': result['title'],
+            'thumbnail': result['thumbnail'],
+            'upload_date': result['upload_date'], # 20161104
+            'uploader': result['uploader'],
+            'uploader_id': result['uploader_id'],
+            'uploader_url': result['uploader_url'],
+            'format': result['formats'][-1],
+            'last_visit': int(time.time() * 1000)
+        }
+        table.put_item(Item=item)
+
+        # Return JSON for debugging purpose
+        response = {
+            "statusCode": 200,
+            "body": json.dumps(item)
+        }
+        return response
+
+    except:
+        pass
+
+    # Error?
+    response = {
+        "statusCode": 400
+    }
+    return response

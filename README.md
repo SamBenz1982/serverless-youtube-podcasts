@@ -167,7 +167,12 @@ Install required python dependencies (populates `.requirements/` directory)
 
 Invoke functions:
 
+    sls invoke --function playlistFeed --path test_playlistFeed.json
     sls invoke local --function playlistFeed --path test_playlistFeed.json
 
+    sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl.json
     sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl.json
+
+    sls invoke --function updateVideo --path test_updateVideo.json
+    sls invoke local --function updateVideo --path test_updateVideo.json
     
