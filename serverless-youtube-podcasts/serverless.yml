@@ -10,8 +10,6 @@ package:
 provider:
   name: aws
   runtime: python2.7
-  environment:
-    URL_PATH_PREFIX: /${self:provider.stage}
 
 # Functions 
 functions:

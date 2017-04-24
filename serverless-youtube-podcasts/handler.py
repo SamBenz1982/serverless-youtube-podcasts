@@ -17,7 +17,7 @@ def playlistFeed(event, context):
     # TODO: validate playlist ID
     playlist_id = event['pathParameters']['id']
     playlist_url = "https://www.youtube.com/playlist?list=%s" % playlist_id
-    url_path_prefix = os.environ['URL_PATH_PREFIX'] # /dev
+    url_prefix = event["headers"]["X-Forwarded-Proto"] + "://" + event["headers"]["Host"] + "/" + event["requestContext"]["stage"]
 
     dl = YoutubeDL()
     dl.params['extract_flat'] = True
@@ -31,10 +31,11 @@ def playlistFeed(event, context):
         metadata = {
             "title": result["title"],
             "link": playlist_url,
+            "feed": "%s/playlists/%s" % (url_prefix, playlist_id),
             "generator": "serverless-youtube-podcasts",
             "lastBuildDate": formatdate(time.time()),
             "pubDate": formatdate(time.time()),
-            "category": "TV &amp; Film",
+            "category": "TV & Film",
             "items" : []
         }
 
@@ -44,16 +45,15 @@ def playlistFeed(event, context):
                 "title": entry["title"],
                 "link": "https://www.youtube.com/watch?v=%s" % video_id,
                 "pubDate": formatdate(time.time()),
-                "videoLength": "0",
-                "videoUrl": "%s/videos/%s" % (url_path_prefix, video_id),
+                "videoLength": "1000000",
+                "videoUrl": "%s/videos/%s.mp4" % (url_prefix, video_id),
                 "videoType": "video/mp4",
-                "duration": "00:00:00",
-                "thumbnail": "%s/videos/%s/thumbnail" % (url_path_prefix, video_id)
+                "duration": "01:00:00"
             }
             metadata["items"].append(item)
 
         # render response
-        env = Environment(loader=FileSystemLoader("."))
+        env = Environment(loader=FileSystemLoader("."), autoescape=select_autoescape(['xml']))
         template = env.get_template("podcast.xml")
         response = {
             "statusCode": 200,

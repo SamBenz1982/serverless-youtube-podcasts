@@ -4,6 +4,7 @@
     <title>{{ title }}</title>
     <description />
     <link>{{ link }}</link>
+    <atom:link href="{{ feed }}" rel="self" type="application/rss+xml" />
     <generator>{{ generator }}</generator>
     <lastBuildDate>{{ lastBuildDate }}</lastBuildDate>
     <pubDate>{{ pubDate }}</pubDate>
@@ -11,9 +12,10 @@
     <itunes:summary />
     <itunes:explicit>yes</itunes:explicit>
     <itunes:category text="{{ category }}" />
+    <!--
     <itunes:image href="{{ thumbnail }}" />
     <media:thumbnail url="{{ thumbnail }}" />
-    
+    -->
     {% for item in items %}
     <item>
       <title>{{ item.title }}</title>
