@@ -19,7 +19,7 @@
     {% for item in items %}
     <item>
       <title>{{ item.title }}</title>
-      <description></description>
+      <description>{{ item.description }}</description>
       <link>{{ item.link }}</link>
       <pubDate>{{ item.pubDate }}</pubDate>
       <guid isPermaLink="true">{{ item.link }}</guid>
@@ -27,7 +27,7 @@
       <media:content url="{{ item.videoUrl }}" fileSize="{{ item.videoLength }}" type="{{ item.videoType }}" />
       <itunes:subtitle>{{ item.title }}</itunes:subtitle>
       <itunes:summary />
-      <itunes:duration>{{ item.duration }}</itunes:duration>
+      <itunes:duration>{{ item.videoDuration }}</itunes:duration>
     </item>
     {% endfor %}
 

@@ -41,6 +41,11 @@ def playlistFeed(event, context):
             "items" : []
         }
 
+        # additional information from DynamoDB
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+
+        # iterate over items
         for entry in list(result['entries']):
             video_id = entry['id']
             item = {
@@ -50,8 +55,21 @@ def playlistFeed(event, context):
                 "videoLength": "1000000",
                 "videoUrl": "%s/videos/%s.mp4" % (url_prefix, video_id),
                 "videoType": "video/mp4",
-                "duration": "01:00:00"
+                "videoDuration": "01:00:00"
             }
+
+            # add/overwrite additional information
+            try:
+                result = table.get_item(
+                    Key={
+                        'id': video_id
+                    }
+                )
+                item['description'] = result['Item']['description']
+            except:
+                pass
+
+            # add item to feed
             metadata["items"].append(item)
 
         # render response
