@@ -23,6 +23,10 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resource: "arn:aws:sns:${opt:region, self:provider.region}:*:updateVideo"
 
 # Functions 
 functions:
@@ -43,6 +47,10 @@ functions:
 
   updateVideo:
     handler: handler.updateVideo
+    events:
+      - sns:
+          topicName: updateVideo
+          displayName: Update video pipeline
 
 # Plugins
 plugins:

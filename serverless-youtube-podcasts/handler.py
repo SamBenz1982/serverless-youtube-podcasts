@@ -67,6 +67,15 @@ def playlistFeed(event, context):
                 )
                 item['description'] = result['Item']['description']
             except:
+                # no result? trigger updating video via SNS
+                sns = boto3.client('sns')
+                message = { 'video_id': video_id }
+                response = sns.publish(
+                    # TODO: generate TopicArn
+                    TopicArn = 'arn:aws:sns:eu-west-1:841586162528:updateVideo',
+                    Message = json.dumps({"default": json.dumps(message)}),
+                    MessageStructure = 'json'
+                )
                 pass
 
             # add item to feed
@@ -122,8 +131,12 @@ def videoPlaybackUrl(event, context):
 
 def updateVideo(event, context):
 
+    # parse SNS message
+    message = event['Records'][0]['Sns']['Message']
+    parsed_message = json.loads(message)
+
     # TODO: validate video ID
-    video_id = event['video_id']
+    video_id = parsed_message['video_id']
     video_url = "https://www.youtube.com/watch?v=%s" % video_id
 
     dynamodb = boto3.resource('dynamodb')

@@ -1,3 +1,9 @@
 {
-    "video_id": "Xh43D4E2e2M"
+    "Records": [
+        {
+            "Sns": {
+                "Message": "{ \"video_id\": \"Xh43D4E2e2M\" }"
+            }
+        }
+    ]
 }
