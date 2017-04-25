@@ -8,6 +8,7 @@ import boto3
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.join(root, '.requirements'))
 
+from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from email.utils import formatdate
 from youtube_dl import YoutubeDL
@@ -65,8 +66,14 @@ def playlistFeed(event, context):
                         'id': video_id
                     }
                 )
+
+                # convert 20161104 date format to rfc822
+                pubDate = datetime.strptime(result['Item']["upload_date"], "%Y%m%d")
+                item['pubDate'] = formatdate(time.mktime(pubDate.timetuple()), usegmt=True)
+                # description/summary
                 item['description'] = result['Item']['description']
             except:
+
                 # no result? trigger updating video via SNS
                 sns = boto3.client('sns')
                 message = { 'video_id': video_id }
