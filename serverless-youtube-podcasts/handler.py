@@ -4,6 +4,8 @@ import time
 import json
 import boto3
 
+from boto3.dynamodb.conditions import Key, Attr
+
 # add .requirements/ to the Python search path
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.join(root, '.requirements'))
@@ -42,51 +44,50 @@ def playlistFeed(event, context):
             "items" : []
         }
 
-        # additional information from DynamoDB
+        # get list of video ids
+        video_ids = map(lambda entry: entry['id'], list(result['entries']))
+
+        # identify videos, where metadata is already stored in DynamoDB
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+        cached_videos = table.scan(
+            FilterExpression=Attr('id').is_in(video_ids)
+        )
 
         # iterate over items
-        for entry in list(result['entries']):
-            video_id = entry['id']
+        known_video_ids = []
+        for cached_video in cached_videos['Items']:
+            video_id = cached_video['id']
+            known_video_ids.append(video_id)
+
+            # convert 20161104 date format to rfc822
+            pubDate = datetime.strptime(cached_video["upload_date"], "%Y%m%d")
+
+            # populate feed item
             item = {
-                "title": entry["title"],
+                "title": cached_video["title"],
                 "link": "https://www.youtube.com/watch?v=%s" % video_id,
-                "pubDate": formatdate(time.time()),
+                "pubDate": formatdate(time.mktime(pubDate.timetuple()), usegmt=True),
+                "description": cached_video['description'],
                 "videoLength": "1000000",
                 "videoUrl": "%s/videos/%s.mp4" % (url_prefix, video_id),
                 "videoType": "video/mp4",
                 "videoDuration": "01:00:00"
             }
+            metadata["items"].append(item)
 
-            # add/overwrite additional information
-            try:
-                result = table.get_item(
-                    Key={
-                        'id': video_id
-                    }
-                )
-
-                # convert 20161104 date format to rfc822
-                pubDate = datetime.strptime(result['Item']["upload_date"], "%Y%m%d")
-                item['pubDate'] = formatdate(time.mktime(pubDate.timetuple()), usegmt=True)
-                # description/summary
-                item['description'] = result['Item']['description']
-            except:
-
+        # trigger updateVideo via SNS if necessary
+        for video_id in video_ids:
+            if video_id not in known_video_ids:
                 # no result? trigger updating video via SNS
                 sns = boto3.client('sns')
                 message = { 'video_id': video_id }
-                response = sns.publish(
+                sns.publish(
                     # TODO: generate TopicArn
                     TopicArn = 'arn:aws:sns:eu-west-1:841586162528:updateVideo',
                     Message = json.dumps({"default": json.dumps(message)}),
                     MessageStructure = 'json'
                 )
-                pass
-
-            # add item to feed
-            metadata["items"].append(item)
 
         # render response
         env = Environment(loader=FileSystemLoader("."), autoescape=select_autoescape(['xml']))
@@ -105,7 +106,6 @@ def playlistFeed(event, context):
             "statusCode": 404
         }
         return response
-
 
 def videoPlaybackUrl(event, context):
 

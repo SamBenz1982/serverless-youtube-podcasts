@@ -37,7 +37,7 @@ functions:
       - http:
           path: playlists/{id}
           method: get
-  
+
   videoPlaybackUrl:
     handler: handler.videoPlaybackUrl
     events:
