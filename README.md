@@ -1,6 +1,6 @@
-# Serverless Youtube Podcast Feeds
+# Serverless YouTube Playlist Podcast feeds
 
-Access Youtube Playlists in Podcast format.
+Access YouTube playlists in Podcast format
 
 ## Quick start
 
@@ -11,37 +11,63 @@ Ensure Python 2.7 is available:
     python --version
     Python 2.7
 
-Install nodeenv via `pip`:
+Install virtualenv, if necessary:
 
-    pip install nodeenv
-    
-    nodeenv --version
-    1.1.2
+    pip install virtualenv
 
-### Install Node.js® via nodeenv
 
-Create virtual Node.js® environment in `venv/`:
+### Create and activate virtual environment for Python and Node.js®
 
-    nodeenv venv/
-     * Install prebuilt node (7.9.0) ..... done.
-    
-Active and verify:  
+Create virtual environment in `venv/`:
+
+    virtualenv venv/
+
+Active:
 
     source venv/bin/activate
 
+Verify:
+
+    which python
+    /Users/.../.../serverless-youtube-podcasts/venv/bin/python
+
+#### Install Python libraries nodeenv and boto3
+
+Install requirements defined in `requirements.txt`
+
+    pip install -r requirements.txt
+
+#### Install Node.Js
+
+Install Node.Js version 6.10.2 via [nodeenv](https://github.com/ekalinin/nodeenv) into current virtualenv (-p)
+
+    nodeenv -p -n 6.10.2
+     * Install prebuilt node (6.10.2) ..... done.
+     * Appending data to /Users/.../.../serverless-youtube-podcasts/venv/bin/activate
+     * Overwriting /Users/.../.../serverless-youtube-podcasts/venv/bin/shim with new content
+
+Verify Node.Js and NPM versions:
+
     node -v
-    v7.9.0
+    v6.10.2
 
     npm -v
-    4.2.0
+    3.10.10
+
 
 ### Install Serverless Framework
 
-To install the serverless framework (currently version 1.11)
+To install the serverless framework (currently version 1.12.1)
 
-    npm install serverless -g
+    npm install serverless@1.12.1 -g
 
-### Deploy
+Change to `serverless-youtube-podcasts/` directory and install plugins:
+
+    cd serverless-youtube-podcasts/
+    npm install --save
+
+
+## Deploy
 
 Choose AWS profile:
 
@@ -77,7 +103,7 @@ Deploy:
       videoPlaybackUrl: serverless-youtube-podcasts-dev-videoPlaybackUrl
       updateVideo: serverless-youtube-podcasts-dev-updateVideo
 
-### Testing
+## Test
 
 Testing the playlist feed:
 
@@ -160,7 +186,8 @@ Testing the video playback URL redirection:
     X-Cache: Miss from cloudfront
     x-amzn-RequestId: d83799f7-2870-11e7-bb26-7fafe85cc082
 
-### Workflow for testing locally
+
+## Workflow for testing locally
 
 Install required python dependencies (populates `.requirements/` directory)
 
