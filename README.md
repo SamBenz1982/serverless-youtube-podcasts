@@ -15,7 +15,6 @@ Install virtualenv, if necessary:
 
     pip install virtualenv
 
-
 ### Create and activate virtual environment for Python and Node.js®
 
 Create virtual environment in `venv/`:
@@ -105,7 +104,13 @@ Deploy:
 
 ## Test
 
-Testing the playlist feed:
+Install required python dependencies (populates `.requirements/` directory)
+
+    sls requirements install
+    
+### Playlist feed
+
+Testing the playlist feed via HTTP request:
 
     http https://---.execute-api.eu-west-1.amazonaws.com/dev/playlists/PLEx5khR4g7PJELLTYwXZHcimWAwTUaWGA
 
@@ -166,7 +171,18 @@ Testing the playlist feed:
     </channel>
     </rss>
 
-Testing the video playback URL redirection:
+Testing the playlist feed via lambda function invocation: 
+
+    sls invoke --function playlistFeed --path test_playlistFeed.json
+
+Testing the playlist feed via local function invocation:
+
+    sls invoke local --function playlistFeed --path test_playlistFeed.json
+
+
+### Video playback URL
+
+Testing the video playback URL redirection via HTTP request:
 
     http https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M
     
@@ -186,21 +202,21 @@ Testing the video playback URL redirection:
     X-Cache: Miss from cloudfront
     x-amzn-RequestId: d83799f7-2870-11e7-bb26-7fafe85cc082
 
-
-## Workflow for testing locally
-
-Install required python dependencies (populates `.requirements/` directory)
-
-    sls requirements install
-
-Invoke functions:
-
-    sls invoke --function playlistFeed --path test_playlistFeed.json
-    sls invoke local --function playlistFeed --path test_playlistFeed.json
+Testing the video playback URL redirection via Lambda function invocation:
 
     sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl.json
+    
+Testing the video playback URL redirection via local function invocation:
+
     sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl.json
 
+### Update video request
+
+Testing the update video playback URL redirection via Lambda function invocation:
+
     sls invoke --function updateVideo --path test_updateVideo.json
+
+Testing the update video via local function invocation:
+
     sls invoke local --function updateVideo --path test_updateVideo.json
     
