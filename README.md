@@ -2,6 +2,9 @@
 
 Access YouTube playlists in Podcast format
 
+[![Build Status](https://travis-ci.org/sedden/serverless-youtube-podcasts.svg?branch=master)](https://travis-ci.org/sedden/serverless-youtube-podcasts)
+[![Dependency Status](https://gemnasium.com/badges/github.com/sedden/serverless-youtube-podcasts.svg)](https://gemnasium.com/github.com/sedden/serverless-youtube-podcasts)
+
 ## Quick start
 
 ### AWS setup
