@@ -1,15 +1,9 @@
 import os
-import sys
 import time
 import json
 import boto3
 
 from boto3.dynamodb.conditions import Attr
-
-# add .requirements/ to the Python search path
-root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.join(root, '.requirements'))
-
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from email.utils import formatdate
