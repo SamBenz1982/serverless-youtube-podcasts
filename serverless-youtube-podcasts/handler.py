@@ -89,10 +89,11 @@ def playlistFeed(event, context):
             if video_id not in known_video_ids:
                 # no result? trigger updating video via SNS
                 sns = boto3.client('sns')
+                aws_account_id = os.environ['AWS_ACCOUNTID']
                 message = { 'video_id': video_id }
                 sns.publish(
                     # TODO: generate TopicArn
-                    TopicArn = 'arn:aws:sns:eu-west-1:841586162528:updateVideo',
+                    TopicArn =('arn:aws:sns:eu-west-1:%s:updateVideo' % aws_account_id),
                     Message = json.dumps({"default": json.dumps(message)}),
                     MessageStructure = 'json'
                 )

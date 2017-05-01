@@ -5,28 +5,27 @@ frameworkVersion: ">=1.0.0 <2.0.0"
 package:
   exclude:
     - node_modules/**
-    
+
+
 # Provider
 provider:
   name: aws
   runtime: python2.7
   region: eu-west-1
   environment:
+    AWS_ACCOUNTID: ${file(serverless.env.yml):awsAccountId}
     DYNAMODB_TABLE: ${self:service}-${opt:stage,self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
+        - dynamodb:Scan
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
     - Effect: Allow
       Action:
         - sns:Publish
       Resource: "arn:aws:sns:${opt:region, self:provider.region}:*:updateVideo"
+
 
 # Functions 
 functions:
@@ -51,6 +50,7 @@ functions:
       - sns:
           topicName: updateVideo
           displayName: Update video pipeline
+
 
 # Plugins
 plugins:

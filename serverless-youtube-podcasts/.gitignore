@@ -20,3 +20,6 @@ var/
 # Serverless directories
 .serverless
 .requirements
+
+# Setting
+serverless.env.yml

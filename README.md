@@ -4,6 +4,15 @@ Access YouTube playlists in Podcast format
 
 ## Quick start
 
+### AWS setup
+
+Please check the [official guide of the serverless framework](https://serverless.com/framework/docs/providers/aws/guide/credentials/#creating-aws-access-keys)
+on how to setup and configure the AWS credentials for deployment.
+
+Additionally, please create the `serverless.env.yml` file and add your AWS account ID.
+
+    awsAccountId: 123456789012
+
 ### Verify Python installation
 
 Ensure Python 2.7 is available:
@@ -75,7 +84,7 @@ Choose AWS profile:
 
 Deploy:
 
-    sls deploy --region eu-west-1
+    sls deploy
 
     Serverless: Installing required Python packages...
     Serverless: Linking required Python packages...
@@ -171,11 +180,11 @@ Testing the playlist feed via HTTP request:
     </channel>
     </rss>
 
-Testing the playlist feed via lambda function invocation: 
+Testing the `playlistFeed` handler: 
 
     sls invoke --function playlistFeed --path test_playlistFeed.json
 
-Testing the playlist feed via local function invocation:
+Testing the `playlistFeed` handler via local function invocation:
 
     sls invoke local --function playlistFeed --path test_playlistFeed.json
 
@@ -202,21 +211,21 @@ Testing the video playback URL redirection via HTTP request:
     X-Cache: Miss from cloudfront
     x-amzn-RequestId: d83799f7-2870-11e7-bb26-7fafe85cc082
 
-Testing the video playback URL redirection via Lambda function invocation:
+Testing the `videoPlaybackUrl` handler:
 
     sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl.json
     
-Testing the video playback URL redirection via local function invocation:
+Testing the `videoPlaybackUrl` handler via local function invocation:
 
     sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl.json
 
 ### Update video request
 
-Testing the update video playback URL redirection via Lambda function invocation:
+Testing the `updateVideo` handler:
 
     sls invoke --function updateVideo --path test_updateVideo.json
 
-Testing the update video via local function invocation:
+Testing the `updateVideo` handler via local function invocation:
 
     sls invoke local --function updateVideo --path test_updateVideo.json
     
