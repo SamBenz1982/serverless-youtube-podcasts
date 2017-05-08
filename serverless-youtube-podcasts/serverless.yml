@@ -29,7 +29,7 @@ provider:
 
 # Functions 
 functions:
-  
+
   playlistFeed:
     handler: handler.playlistFeed
     events:

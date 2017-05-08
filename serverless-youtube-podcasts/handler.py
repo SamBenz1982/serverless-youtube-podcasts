@@ -20,12 +20,7 @@ def playlistFeed(event, context):
     playlist_url = 'https://www.youtube.com/playlist?list=%s' % playlist_id
 
     # build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'
-    headers = event.get('headers', dict())
-    request_context = event.get('requestContext', dict())
-    if 'X-Forwarded-Proto' in headers and 'Host' in headers and 'stage' in request_context:
-        url_prefix = headers['X-Forwarded-Proto'] + '://' + headers['Host'] + "/" + request_context['stage']
-    else:
-        url_prefix = '/dummy'
+    url_prefix = get_url_prefix(event)
 
     # extract information from YouTube video page
     dl = YoutubeDL()
@@ -109,6 +104,22 @@ def playlistFeed(event, context):
             'statusCode': 404
         }
         return response
+
+
+def get_url_prefix(event):
+    '''
+    Build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'
+    
+    :param event:  AWS Lambda event data passed to handler.
+    :return: URL prefix.
+    '''
+    headers = event.get('headers', dict())
+    request_context = event.get('requestContext', dict())
+    if 'X-Forwarded-Proto' in headers and 'Host' in headers and 'stage' in request_context:
+        return headers['X-Forwarded-Proto'] + '://' + headers['Host'] + "/" + request_context['stage']
+
+    # fallback
+    return '/dummy'
 
 
 def videoPlaybackUrl(event, context):
