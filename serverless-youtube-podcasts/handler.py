@@ -46,7 +46,7 @@ def playlistFeed(event, context):
         video_ids = map(lambda entry: entry['id'], list(result['entries']))
 
         # identify videos, where metadata is already stored in DynamoDB
-        table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+        table = dynamodb.Table(os.environ['VIDEOS_TABLE'])
         cached_videos = table.scan(
             FilterExpression=Attr('id').is_in(video_ids)
         )
@@ -186,7 +186,7 @@ def updateVideo(event, context):
             'format': result['formats'][-1],
             'last_visit': int(time.time() * 1000)
         }
-        table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+        table = dynamodb.Table(os.environ['VIDEOS_TABLE'])
         table.put_item(Item=item)
 
         # return JSON for debugging purpose

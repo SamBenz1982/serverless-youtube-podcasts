@@ -14,13 +14,13 @@ provider:
   region: eu-west-1
   environment:
     AWS_ACCOUNTID: ${file(serverless.env.yml):awsAccountId}
-    DYNAMODB_TABLE: ${self:service}-${opt:stage,self:provider.stage}
+    VIDEOS_TABLE: ${self:service}-videos-${opt:stage,self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:PutItem
         - dynamodb:Scan
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VIDEOS_TABLE}"
     - Effect: Allow
       Action:
         - sns:Publish
@@ -75,4 +75,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.VIDEOS_TABLE}
