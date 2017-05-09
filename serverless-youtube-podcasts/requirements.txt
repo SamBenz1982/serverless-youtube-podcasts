@@ -1,2 +1,2 @@
-youtube_dl==2017.5.1
+youtube_dl==2017.5.7
 Jinja2==2.9.6
