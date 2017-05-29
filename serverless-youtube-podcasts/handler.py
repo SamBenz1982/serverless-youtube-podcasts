@@ -2,6 +2,7 @@ import os
 import time
 import json
 import boto3
+import pafy
 
 from boto3.dynamodb.conditions import Attr
 from datetime import datetime
@@ -57,8 +58,8 @@ def playlistFeed(event, context):
             video_id = cached_video['id']
             known_video_ids.append(video_id)
 
-            # convert 20161104 date format to rfc822
-            pubDate = datetime.strptime(cached_video['upload_date'], '%Y%m%d')
+            # parse date format '2012-10-02 17:17:24' for rfc822 conversion
+            pubDate = datetime.strptime(cached_video['published'], '%Y-%m-%d %H:%M:%S')
 
             # populate feed item
             item = {
@@ -66,10 +67,10 @@ def playlistFeed(event, context):
                 'link': 'https://www.youtube.com/watch?v=%s' % video_id,
                 'pubDate': formatdate(time.mktime(pubDate.timetuple()), usegmt=True),
                 'description': cached_video['description'],
-                'videoLength': '1000000',
+                'videoLength': cached_video['filesize'],
                 'videoUrl': '%s/videos/%s.mp4' % (url_prefix, video_id),
                 'videoType': 'video/mp4',
-                'videoDuration': '01:00:00'
+                'videoDuration': cached_video['duration']
             }
             metadata['items'].append(item)
 
@@ -161,29 +162,23 @@ def updateVideo(event, context):
     video_id = parsed_message['video_id']
     video_url = 'https://www.youtube.com/watch?v=%s' % video_id
 
-    dl = YoutubeDL()
-    dl.params['geturl'] = True
-    dl.params['dumpjson'] = True
-    ie = YoutubeIE(dl)
-
     try:
         # retrieve video metadata
-        result = ie.extract(video_url)
+        video = pafy.new(video_url)
+        best = video.getbest(preftype="mp4")
 
         # create (or overwrite) existing item in DynamoDB
         item = {
             'id': video_id,
-            'age_limit': result['age_limit'],
-            'description': result['description'],
-            'duration': result['duration'],
-            'license': result['license'],
-            'title': result['title'],
-            'thumbnail': result['thumbnail'],
-            'upload_date': result['upload_date'], # 20161104
-            'uploader': result['uploader'],
-            'uploader_id': result['uploader_id'],
-            'uploader_url': result['uploader_url'],
-            'format': result['formats'][-1],
+            'description': video.description,
+            'duration': video.duration,
+            'author': video.author,
+            'filesize': best.get_filesize(),
+            'url': best.url,
+            'title': video.title,
+            'thumbnail': video.thumb,
+            'published': video.published, # 2012-10-02 17:17:24
+            'uploader': video.username,
             'last_visit': int(time.time() * 1000)
         }
         table = dynamodb.Table(os.environ['VIDEOS_TABLE'])
