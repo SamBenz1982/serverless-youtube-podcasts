@@ -9,8 +9,7 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from email.utils import formatdate
 from youtube_dl import YoutubeDL
-from youtube_dl.extractor import YoutubePlaylistIE, YoutubeIE
-from youtube_dl.utils import ExtractorError
+from youtube_dl.extractor import YoutubeIE
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -24,16 +23,11 @@ def playlistFeed(event, context):
     url_prefix = get_url_prefix(event)
 
     # extract information from YouTube video page
-    dl = YoutubeDL()
-    dl.params['extract_flat'] = True
-    dl.params['dumpjson'] = True
-    ie = YoutubePlaylistIE(dl)
     try:
-        result = ie.extract(playlist_url)
-        assert result['_type'] == 'playlist'
+        playlist = pafy.get_playlist(playlist_url)
 
         metadata = {
-            'title': result['title'],
+            'title': '%s: %s' % (playlist['author'], playlist['title']),
             'link': playlist_url,
             'feed': '%s/playlists/%s' % (url_prefix, playlist_id),
             'generator': 'serverless-youtube-podcasts',
@@ -44,7 +38,7 @@ def playlistFeed(event, context):
         }
 
         # get list of video ids
-        video_ids = map(lambda entry: entry['id'], list(result['entries']))
+        video_ids = map(lambda entry: entry['pafy'].videoid, list(playlist['items']))
 
         # identify videos, where metadata is already stored in DynamoDB
         table = dynamodb.Table(os.environ['VIDEOS_TABLE'])
@@ -100,7 +94,7 @@ def playlistFeed(event, context):
         }
         return response
 
-    except ExtractorError:
+    except:
         response = {
             'statusCode': 404
         }
@@ -145,7 +139,7 @@ def videoPlaybackUrl(event, context):
         }
         return response
 
-    except ExtractorError:
+    except:
         response = {
             'statusCode': 404
         }
