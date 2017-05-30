@@ -12,10 +12,12 @@
     <itunes:summary />
     <itunes:explicit>yes</itunes:explicit>
     <itunes:category text="{{ category }}" />
-    <!--
+
+    {% if thumbnail %}
     <itunes:image href="{{ thumbnail }}" />
     <media:thumbnail url="{{ thumbnail }}" />
-    -->
+    {% endif %}
+
     {% for item in items %}
     <item>
       <title>{{ item.title }}</title>

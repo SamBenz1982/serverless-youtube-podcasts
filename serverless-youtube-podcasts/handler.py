@@ -82,6 +82,12 @@ def playlistFeed(event, context):
                     MessageStructure = 'json'
                 )
 
+        # try to set thumbnail
+        try:
+            metadata['thumbnail'] = playlist['items'][0]['pafy'].thumb
+        except:
+            pass
+
         # render response
         env = Environment(loader=FileSystemLoader('.'), autoescape=select_autoescape(['xml']))
         template = env.get_template('podcast.xml')
