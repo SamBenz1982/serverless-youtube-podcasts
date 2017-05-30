@@ -31,21 +31,21 @@ provider:
 functions:
 
   playlistFeed:
-    handler: handler.playlistFeed
+    handler: handler.playlist_feed
     events:
       - http:
           path: playlists/{id}
           method: get
 
   videoPlaybackUrl:
-    handler: handler.videoPlaybackUrl
+    handler: handler.video_playback_url
     events:
       - http:
           path: videos/{id}
           method: get
 
   updateVideo:
-    handler: handler.updateVideo
+    handler: handler.update_video
     events:
       - sns:
           topicName: updateVideo

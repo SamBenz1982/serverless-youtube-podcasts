@@ -1,19 +1,24 @@
 import os
 import time
 import json
+from email.utils import formatdate
+from datetime import datetime
+
 import boto3
 import pafy
-
-from boto3.dynamodb.conditions import Attr
-from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from email.utils import formatdate
 from youtube_dl import YoutubeDL
 from youtube_dl.extractor import YoutubeIE
 
-dynamodb = boto3.resource('dynamodb')
+DYNAMODB = boto3.resource('dynamodb')
 
-def playlistFeed(event, context):
+def playlist_feed(event, context):
+    '''
+    Generate RSS/Podcast XML-feed for playlist.
+    :param event: AWS Lambda event data passed to handler.
+    :param context: AWS Lambda context data passed to handler.
+    :return: Playlist RSS/Podcast XML-feed.
+    '''
 
     # TODO: validate playlist ID
     playlist_id = event['pathParameters']['id']
@@ -41,9 +46,9 @@ def playlistFeed(event, context):
         video_ids = map(lambda entry: entry['pafy'].videoid, list(playlist['items']))
 
         # identify videos, where metadata is already stored in DynamoDB
-        table = dynamodb.Table(os.environ['VIDEOS_TABLE'])
+        table = DYNAMODB.Table(os.environ['VIDEOS_TABLE'])
         cached_videos = table.scan(
-            FilterExpression=Attr('id').is_in(video_ids)
+            FilterExpression=boto3.dynamodb.conditions.Attr('id').is_in(video_ids)
         )
 
         # iterate over items
@@ -75,12 +80,12 @@ def playlistFeed(event, context):
                 # no result? trigger updating video via SNS
                 sns = boto3.client('sns')
                 aws_account_id = os.environ['AWS_ACCOUNTID']
-                message = { 'video_id': video_id }
+                message = {'video_id': video_id}
                 sns.publish(
                     # TODO: generate TopicArn
-                    TopicArn =('arn:aws:sns:eu-west-1:%s:updateVideo' % aws_account_id),
-                    Message = json.dumps({"default": json.dumps(message)}),
-                    MessageStructure = 'json'
+                    TopicArn=('arn:aws:sns:eu-west-1:%s:updateVideo' % aws_account_id),
+                    Message=json.dumps({"default": json.dumps(message)}),
+                    MessageStructure='json'
                 )
 
         # try to set thumbnail
@@ -111,7 +116,6 @@ def playlistFeed(event, context):
 def get_url_prefix(event):
     '''
     Build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'
-    
     :param event:  AWS Lambda event data passed to handler.
     :return: URL prefix.
     '''
@@ -124,7 +128,13 @@ def get_url_prefix(event):
     return '/dummy'
 
 
-def videoPlaybackUrl(event, context):
+def video_playback_url(event, context):
+    '''
+    Generate redirect response to playback/download URL.
+    :param event: AWS Lambda event data passed to handler.
+    :param context: AWS Lambda context data passed to handler.
+    :return: redirect response with playback/download URL.
+    '''
 
     # TODO: validate video ID
     video_id = event['pathParameters']['id']
@@ -153,7 +163,13 @@ def videoPlaybackUrl(event, context):
         return response
 
 
-def updateVideo(event, context):
+def update_video(event, context):
+    '''
+    SNS handler for updating video metadata in DynamoDB.
+    :param event: AWS Lambda event data passed to handler.
+    :param context: AWS Lambda context data passed to handler.
+    :return: JSON metadata for debugging purpose.
+    '''
 
     # parse SNS message
     message = event['Records'][0]['Sns']['Message']
@@ -182,7 +198,7 @@ def updateVideo(event, context):
             'uploader': video.username,
             'last_visit': int(time.time() * 1000)
         }
-        table = dynamodb.Table(os.environ['VIDEOS_TABLE'])
+        table = DYNAMODB.Table(os.environ['VIDEOS_TABLE'])
         table.put_item(Item=item)
 
         # return JSON for debugging purpose
