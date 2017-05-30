@@ -61,6 +61,7 @@ def playlistFeed(event, context):
                 'link': 'https://www.youtube.com/watch?v=%s' % video_id,
                 'pubDate': formatdate(time.mktime(pubDate.timetuple()), usegmt=True),
                 'description': cached_video['description'],
+                'thumbnail': cached_video['thumbnail'],
                 'videoLength': cached_video['filesize'],
                 'videoUrl': '%s/videos/%s.mp4' % (url_prefix, video_id),
                 'videoType': 'video/mp4',

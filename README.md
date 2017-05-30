@@ -128,56 +128,61 @@ Testing the playlist feed via HTTP request:
 
     HTTP/1.1 200 OK
     Connection: keep-alive
-    Content-Length: 11228
-    Content-Type: application/json
-    Date: Sat, 22 Apr 2017 19:37:18 GMT
+    Content-Length: 24733
+    Content-Type: application/rss+xml; charset=UTF-8
+    Date: Tue, 30 May 2017 22:10:16 GMT
     Via: 1.1 b24109ed1d6b9c989e349465e3747f9e.cloudfront.net (CloudFront)
     X-Amz-Cf-Id: r91d8Fm6aWwKujDltDDGwAx8RCL1Kz1mfmN9azVMyFfAQFh_eEfNJQ==
     X-Amzn-Trace-Id: sampled=0;root=1-58fbb0ee-3cd014e5f4d359cfca19856b
     X-Cache: Miss from cloudfront
     x-amzn-RequestId: 1882cbab-2793-11e7-b9e1-07e3a8ff1ed8
-
+    
+    <?xml version="1.0" encoding="utf-8"?>
     <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
-    <channel>
-        <title>Architecture</title>
+      <channel>
+        <title>GOTO Conferences: Architecture</title>
         <description />
         <link>https://www.youtube.com/playlist?list=PLEx5khR4g7PJELLTYwXZHcimWAwTUaWGA</link>
+        <atom:link href="https://---.execute-api.eu-west-1.amazonaws.com/dev/playlists/PLEx5khR4g7PJELLTYwXZHcimWAwTUaWGA" rel="self" type="application/rss+xml" />
         <generator>serverless-youtube-podcasts</generator>
-        <lastBuildDate>Sat, 22 Apr 2017 19:34:01 -0000</lastBuildDate>
-        <pubDate>Sat, 22 Apr 2017 19:34:01 -0000</pubDate>
-        <itunes:subtitle>Architecture</itunes:subtitle>
+        <lastBuildDate>Tue, 30 May 2017 22:10:16 -0000</lastBuildDate>
+        <pubDate>Tue, 30 May 2017 22:10:16 -0000</pubDate>
+        <itunes:subtitle>GOTO Conferences: Architecture</itunes:subtitle>
         <itunes:summary />
         <itunes:explicit>yes</itunes:explicit>
         <itunes:category text="TV &amp; Film" />
-        <itunes:image href="" />
-        <media:thumbnail url="" />
-        
+
+        <itunes:image href="http://i.ytimg.com/vi/GAFZcYlO5S0/default.jpg" />
+        <media:thumbnail url="http://i.ytimg.com/vi/GAFZcYlO5S0/default.jpg" />
+
         <item>
-        <title>GOTO 2014 • Software Architecture vs. Code • Simon Brown</title>
-        <description></description>
-        <link>https://www.youtube.com/watch?v=GAFZcYlO5S0</link>
-        <pubDate>Sat, 22 Apr 2017 19:34:01 -0000</pubDate>
-        <guid isPermaLink="true">https://www.youtube.com/watch?v=GAFZcYlO5S0</guid>
-        <enclosure url="/dev/videos/GAFZcYlO5S0" length="0" type="video/mp4" />
-        <media:content url="/dev/videos/GAFZcYlO5S0" fileSize="0" type="video/mp4" />
-        <itunes:subtitle>GOTO 2014 • Software Architecture vs. Code • Simon Brown</itunes:subtitle>
-        <itunes:summary />
-        <itunes:duration>00:00:00</itunes:duration>
+          <title>GOTO 2014 • Software Architecture vs. Code • Simon Brown</title>
+          <description>This presentation was recorded at GOTO Amsterdam 2014...</description>
+          <link>https://www.youtube.com/watch?v=GAFZcYlO5S0</link>
+          <pubDate>Thu, 11 Dec 2014 15:19:38 GMT</pubDate>
+          <guid isPermaLink="true">https://www.youtube.com/watch?v=GAFZcYlO5S0</guid>
+          <enclosure url="https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/GAFZcYlO5S0.mp4" length="360047840" type="video/mp4" />
+          <media:content url="https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/GAFZcYlO5S0.mp4" fileSize="360047840" type="video/mp4" />
+          <itunes:subtitle>GOTO 2014 • Software Architecture vs. Code • Simon Brown</itunes:subtitle>
+          <itunes:summary />
+          <itunes:duration>00:45:33</itunes:duration>
+          <itunes:image href="http://i.ytimg.com/vi/GAFZcYlO5S0/default.jpg" />
         </item>
         
         <!-- ... -->
         
         <item>
-        <title>GOTO 2015 • Mobile-First Architectures • Alexander Stigsen</title>
-        <description></description>
-        <link>https://www.youtube.com/watch?v=Xh43D4E2e2M</link>
-        <pubDate>Sat, 22 Apr 2017 19:34:01 -0000</pubDate>
-        <guid isPermaLink="true">https://www.youtube.com/watch?v=Xh43D4E2e2M</guid>
-        <enclosure url="/dev/videos/Xh43D4E2e2M" length="0" type="video/mp4" />
-        <media:content url="/dev/videos/Xh43D4E2e2M" fileSize="0" type="video/mp4" />
-        <itunes:subtitle>GOTO 2015 • Mobile-First Architectures • Alexander Stigsen</itunes:subtitle>
-        <itunes:summary />
-        <itunes:duration>00:00:00</itunes:duration>
+          <title>GOTO 2015 • Mobile-First Architectures • Alexander Stigsen</title>
+          <description>This presentation was recorded at GOTO Chicago 2015...</description>
+          <link>https://www.youtube.com/watch?v=Xh43D4E2e2M</link>
+          <pubDate>Tue, 14 Jul 2015 18:50:13 GMT</pubDate>
+          <guid isPermaLink="true">https://www.youtube.com/watch?v=Xh43D4E2e2M</guid>
+          <enclosure url="https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M.mp4" length="299028788" type="video/mp4" />
+          <media:content url="https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M.mp4" fileSize="299028788" type="video/mp4" />
+          <itunes:subtitle>GOTO 2015 • Mobile-First Architectures • Alexander Stigsen</itunes:subtitle>
+          <itunes:summary />
+          <itunes:duration>00:30:45</itunes:duration>
+          <itunes:image href="http://i.ytimg.com/vi/Xh43D4E2e2M/default.jpg" />
         </item>
         
     </channel>
