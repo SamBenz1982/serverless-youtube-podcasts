@@ -29,7 +29,11 @@
       <itunes:subtitle>{{ item.title }}</itunes:subtitle>
       <itunes:summary />
       <itunes:duration>{{ item.videoDuration }}</itunes:duration>
-      {% if item.thumbnail %}
+      {% if item.thumbnail3 %}
+      <itunes:image href="{{ item.thumbnail3 }}" />
+      {% elif item.thumbnail2 %}
+      <itunes:image href="{{ item.thumbnail2 }}" />
+      {% elif item.thumbnail %}
       <itunes:image href="{{ item.thumbnail }}" />
       {% endif %}
     </item>

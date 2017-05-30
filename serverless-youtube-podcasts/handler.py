@@ -72,6 +72,12 @@ def playlist_feed(event, context):
                 'videoType': 'video/mp4',
                 'videoDuration': cached_video['duration']
             }
+            # optional elements
+            if cached_video.has_key('thumbnail2'):
+                    item['thumbnail2'] = cached_video['thumbnail2']
+            if cached_video.has_key('thumbnail3'):
+                item['thumbnail3'] = cached_video['thumbnail3']
+            # append to items list
             metadata['items'].append(item)
 
         # trigger updateVideo via SNS (if necessary)
@@ -194,6 +200,8 @@ def update_video(event, context):
             'url': best.url,
             'title': video.title,
             'thumbnail': video.thumb,
+            'thumbnail2': video.bigthumb,
+            'thumbnail3': video.bigthumbhd,
             'published': video.published, # 2012-10-02 17:17:24
             'uploader': video.username,
             'last_visit': int(time.time() * 1000)
