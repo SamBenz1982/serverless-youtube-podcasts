@@ -12,13 +12,14 @@ from youtube_dl.extractor import YoutubeIE
 
 DYNAMODB = boto3.resource('dynamodb')
 
+
 def playlist_feed(event, context):
-    '''
+    """
     Generate RSS/Podcast XML-feed for playlist.
     :param event: AWS Lambda event data passed to handler.
     :param context: AWS Lambda context data passed to handler.
     :return: Playlist RSS/Podcast XML-feed.
-    '''
+    """
 
     # TODO: validate playlist ID
     playlist_id = event['pathParameters']['id']
@@ -39,7 +40,7 @@ def playlist_feed(event, context):
             'lastBuildDate': formatdate(time.time()),
             'pubDate': formatdate(time.time()),
             'category': 'TV & Film',
-            'items' : []
+            'items': []
         }
 
         # get list of video ids
@@ -58,13 +59,13 @@ def playlist_feed(event, context):
             known_video_ids.append(video_id)
 
             # parse date format '2012-10-02 17:17:24' for rfc822 conversion
-            pubDate = datetime.strptime(cached_video['published'], '%Y-%m-%d %H:%M:%S')
+            published = datetime.strptime(cached_video['published'], '%Y-%m-%d %H:%M:%S')
 
             # populate feed item
             item = {
                 'title': cached_video['title'],
                 'link': 'https://www.youtube.com/watch?v=%s' % video_id,
-                'pubDate': formatdate(time.mktime(pubDate.timetuple()), usegmt=True),
+                'pubDate': formatdate(time.mktime(published.timetuple()), usegmt=True),
                 'description': cached_video['description'],
                 'thumbnail': cached_video['thumbnail'],
                 'videoLength': cached_video['filesize'],
@@ -73,9 +74,9 @@ def playlist_feed(event, context):
                 'videoDuration': cached_video['duration']
             }
             # optional elements
-            if cached_video.has_key('thumbnail2'):
-                    item['thumbnail2'] = cached_video['thumbnail2']
-            if cached_video.has_key('thumbnail3'):
+            if 'thumbnail2' in cached_video:
+                item['thumbnail2'] = cached_video['thumbnail2']
+            if 'thumbnail3' in cached_video:
                 item['thumbnail3'] = cached_video['thumbnail3']
             # append to items list
             metadata['items'].append(item)
@@ -120,11 +121,11 @@ def playlist_feed(event, context):
 
 
 def get_url_prefix(event):
-    '''
+    """
     Build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'
     :param event:  AWS Lambda event data passed to handler.
     :return: URL prefix.
-    '''
+    """
     headers = event.get('headers', dict())
     request_context = event.get('requestContext', dict())
     if 'X-Forwarded-Proto' in headers and 'Host' in headers and 'stage' in request_context:
@@ -135,12 +136,12 @@ def get_url_prefix(event):
 
 
 def video_playback_url(event, context):
-    '''
+    """
     Generate redirect response to playback/download URL.
     :param event: AWS Lambda event data passed to handler.
     :param context: AWS Lambda context data passed to handler.
     :return: redirect response with playback/download URL.
-    '''
+    """
 
     # TODO: validate video ID
     video_id = event['pathParameters']['id']
@@ -157,7 +158,7 @@ def video_playback_url(event, context):
         response = {
             'statusCode': 302,
             'headers': {
-                'Location' : result['formats'][-1]['url']
+                'Location': result['formats'][-1]['url']
             }
         }
         return response
@@ -170,12 +171,12 @@ def video_playback_url(event, context):
 
 
 def update_video(event, context):
-    '''
+    """
     SNS handler for updating video metadata in DynamoDB.
     :param event: AWS Lambda event data passed to handler.
     :param context: AWS Lambda context data passed to handler.
     :return: JSON metadata for debugging purpose.
-    '''
+    """
 
     # parse SNS message
     message = event['Records'][0]['Sns']['Message']
@@ -202,7 +203,7 @@ def update_video(event, context):
             'thumbnail': video.thumb,
             'thumbnail2': video.bigthumb,
             'thumbnail3': video.bigthumbhd,
-            'published': video.published, # 2012-10-02 17:17:24
+            'published': video.published,  # 2012-10-02 17:17:24
             'uploader': video.username,
             'last_visit': int(time.time() * 1000)
         }
