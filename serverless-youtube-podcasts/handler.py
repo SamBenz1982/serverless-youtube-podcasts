@@ -7,8 +7,6 @@ from datetime import datetime
 import boto3
 import pafy
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from youtube_dl import YoutubeDL
-from youtube_dl.extractor import YoutubeIE
 
 DYNAMODB = boto3.resource('dynamodb')
 
@@ -144,21 +142,17 @@ def video_playback_url(event, context):
     """
 
     # TODO: validate video ID
-    video_id = event['pathParameters']['id']
-    video_url = "https://www.youtube.com/watch?v=%s" % video_id
+    video_id = event['pathParameters']['id'][:-4]
 
     # extract information from YouTube video page
-    dl = YoutubeDL()
-    dl.params['geturl'] = True
-    dl.params['dumpjson'] = True
-    ie = YoutubeIE(dl)
+    video = pafy.new(video_id)
     try:
         # redirect with status code 302
-        result = ie.extract(video_url)
+        video_format = video.getbest(preftype="mp4")
         response = {
             'statusCode': 302,
             'headers': {
-                'Location': result['formats'][-1]['url']
+                'Location': video_format.url
             }
         }
         return response
