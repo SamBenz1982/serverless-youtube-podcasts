@@ -142,17 +142,26 @@ def video_playback_url(event, context):
     """
 
     # TODO: validate video ID
-    video_id = event['pathParameters']['id'][:-4]
+    path_id = event['pathParameters']['id'].split('.')
+    if len(path_id) > 1:
+        video_id = path_id[0]
+        video_ext = path_id[1]
+    else:
+        video_id = path_id[0]
+        video_ext = 'mp4'
 
     # extract information from YouTube video page
     video = pafy.new(video_id)
     try:
         # redirect with status code 302
-        video_format = video.getbest(preftype="mp4")
+        if video_ext == 'm4a':
+            video_stream = video.getbestaudio(preftype="m4a")
+        else:
+            video_stream = video.getbest(preftype="mp4")
         response = {
             'statusCode': 302,
             'headers': {
-                'Location': video_format.url
+                'Location': video_stream.url
             }
         }
         return response

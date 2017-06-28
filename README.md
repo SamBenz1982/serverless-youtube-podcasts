@@ -197,11 +197,11 @@ Testing the `playlistFeed` handler via local function invocation:
     sls invoke local --function playlistFeed --path test_playlistFeed.json
 
 
-### Video playback URL
+### Video and Audio playback URL
 
 Testing the video playback URL redirection via HTTP request:
 
-    http https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M
+    http https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M.mp4
     
     HTTP/1.1 302 Found
     Connection: keep-alive
@@ -218,6 +218,22 @@ Testing the video playback URL redirection via HTTP request:
     X-Amzn-Trace-Id: sampled=0;root=1-58fd24f6-497e60822240fc79e2ce4746
     X-Cache: Miss from cloudfront
     x-amzn-RequestId: d83799f7-2870-11e7-bb26-7fafe85cc082
+
+Testing the audio playback URL redirection via HTTP request:
+
+    http https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M.m4a
+
+    HTTP/1.1 302 Found
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json
+    Date: Wed, 28 Jun 2017 04:42:40 GMT
+    Location: http://r14---sn-q0c7dn7e.googlevideo.com/videoplayback?id=5e1e370f81367b63&itag=140&source=youtube&ms=au&ei=wDNTWZngHpzO1gLgt5P4Bw&pl=22&mn=sn-q0c7dn7e&mm=31&mv=u&ratebypass=yes&mime=audio/mp4&gir=yes&clen=29298357&lmt=1434772804622010&dur=1844.709&mt=1498624500&signature=2ED688B44CE3737305B3B186E2DA4802AC99C7E3.193BCA58E1F355A62634DAAD71963CC5706A9220&key=dg_yt0&ip=52.208.4.240&ipbits=0&expire=1498646560&sparams=ip,ipbits,expire,id,itag,source,ms,ei,pl,mn,mm,mv,ratebypass,mime,gir,clen,lmt,dur
+    Via: 1.1 fabe381dacc990f9c402cdc69b69dd26.cloudfront.net (CloudFront)
+    X-Amz-Cf-Id: FMTBYTUoNl39ddFIkCGwbD24xm4Wrp0kXiX3LwPcq2eT5Xy_0rQIsA==
+    X-Amzn-Trace-Id: sampled=0;root=1-595333bf-9f300c5f97695d980880ad82
+    X-Cache: Miss from cloudfront
+    x-amzn-RequestId: 3761b979-5bbc-11e7-8fbf-eb139ea3959c
 
 Testing the `videoPlaybackUrl` handler:
 
