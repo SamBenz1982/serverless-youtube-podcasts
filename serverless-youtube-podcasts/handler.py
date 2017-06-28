@@ -10,16 +10,14 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 DYNAMODB = boto3.resource('dynamodb')
 
+METADATA_KEYS = ['id', 'description', 'duration', 'author', 'video_filesize', 'video_url',
+                 'audio_filesize', 'audio_url', 'title', 'thumbnail', 'thumbnail2', 'thumbnail3', 'published',
+                 'uploader', 'last_visit']
+
 
 def playlist_feed(event, context):
-    """
-    Generate RSS/Podcast XML-feed for playlist.
-    :param event: AWS Lambda event data passed to handler.
-    :param context: AWS Lambda context data passed to handler.
-    :return: Playlist RSS/Podcast XML-feed.
-    """
+    """Generate RSS/Podcast XML-feed for playlist"""
 
-    # TODO: validate playlist ID
     playlist_id = event['pathParameters']['id']
     playlist_url = 'https://www.youtube.com/playlist?list=%s' % playlist_id
 
@@ -41,6 +39,15 @@ def playlist_feed(event, context):
             'items': []
         }
 
+        # video (mp4) vs. audio (m4a) feed?
+        flavor = 'mp4'
+        try:
+            if 'm4a' in event['queryStringParameters']['flavor']:
+                metadata['title'] += " (m4a)"
+                flavor = 'm4a'
+        except:
+            pass
+
         # get list of video ids
         video_ids = map(lambda entry: entry['pafy'].videoid, list(playlist['items']))
 
@@ -54,6 +61,12 @@ def playlist_feed(event, context):
         known_video_ids = []
         for cached_video in cached_videos['Items']:
             video_id = cached_video['id']
+
+            # test if metadata is up-to-date
+            missing_keys = [key for key in METADATA_KEYS if key not in cached_video]
+            if len(missing_keys) > 0:
+                trigger_update(video_id)
+                continue
             known_video_ids.append(video_id)
 
             # parse date format '2012-10-02 17:17:24' for rfc822 conversion
@@ -66,11 +79,19 @@ def playlist_feed(event, context):
                 'pubDate': formatdate(time.mktime(published.timetuple()), usegmt=True),
                 'description': cached_video['description'],
                 'thumbnail': cached_video['thumbnail'],
-                'videoLength': cached_video['filesize'],
-                'videoUrl': '%s/videos/%s.mp4' % (url_prefix, video_id),
-                'videoType': 'video/mp4',
-                'videoDuration': cached_video['duration']
+                'duration': cached_video['duration']
             }
+
+            # url, type and length (size) of stream depends on format
+            if flavor == 'm4a':
+                item['url'] = '%s/videos/%s.m4a' % (url_prefix, video_id)
+                item['type'] = 'audio/m4a'
+                item['length'] = cached_video['audio_filesize']
+            else:
+                item['url'] = '%s/videos/%s.mp4' % (url_prefix, video_id)
+                item['type'] = 'video/mp4'
+                item['length'] = cached_video['video_filesize']
+
             # optional elements
             if 'thumbnail2' in cached_video:
                 item['thumbnail2'] = cached_video['thumbnail2']
@@ -82,16 +103,8 @@ def playlist_feed(event, context):
         # trigger updateVideo via SNS (if necessary)
         for video_id in video_ids:
             if video_id not in known_video_ids:
-                # no result? trigger updating video via SNS
-                sns = boto3.client('sns')
-                aws_account_id = os.environ['AWS_ACCOUNTID']
-                message = {'video_id': video_id}
-                sns.publish(
-                    # TODO: generate TopicArn
-                    TopicArn=('arn:aws:sns:eu-west-1:%s:updateVideo' % aws_account_id),
-                    Message=json.dumps({"default": json.dumps(message)}),
-                    MessageStructure='json'
-                )
+                # no result? trigger updating the video via SNS
+                trigger_update(video_id)
 
         # try to set thumbnail
         try:
@@ -118,12 +131,21 @@ def playlist_feed(event, context):
         return response
 
 
+def trigger_update(video_id):
+    """Trigger updating the video via SNS"""
+    sns = boto3.client('sns')
+    aws_account_id = os.environ['AWS_ACCOUNTID']
+    message = {'video_id': video_id}
+    sns.publish(
+        # TODO: generate TopicArn
+        TopicArn=('arn:aws:sns:eu-west-1:%s:updateVideo' % aws_account_id),
+        Message=json.dumps({"default": json.dumps(message)}),
+        MessageStructure='json'
+    )
+
+
 def get_url_prefix(event):
-    """
-    Build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'
-    :param event:  AWS Lambda event data passed to handler.
-    :return: URL prefix.
-    """
+    """Build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'"""
     headers = event.get('headers', dict())
     request_context = event.get('requestContext', dict())
     if 'X-Forwarded-Proto' in headers and 'Host' in headers and 'stage' in request_context:
@@ -134,14 +156,8 @@ def get_url_prefix(event):
 
 
 def video_playback_url(event, context):
-    """
-    Generate redirect response to playback/download URL.
-    :param event: AWS Lambda event data passed to handler.
-    :param context: AWS Lambda context data passed to handler.
-    :return: redirect response with playback/download URL.
-    """
+    """Generate redirect response to playback/download URL"""
 
-    # TODO: validate video ID
     path_id = event['pathParameters']['id'].split('.')
     if len(path_id) > 1:
         video_id = path_id[0]
@@ -174,25 +190,20 @@ def video_playback_url(event, context):
 
 
 def update_video(event, context):
-    """
-    SNS handler for updating video metadata in DynamoDB.
-    :param event: AWS Lambda event data passed to handler.
-    :param context: AWS Lambda context data passed to handler.
-    :return: JSON metadata for debugging purpose.
-    """
+    """SNS handler for updating video metadata in DynamoDB"""
 
     # parse SNS message
     message = event['Records'][0]['Sns']['Message']
     parsed_message = json.loads(message)
 
-    # TODO: validate video ID
     video_id = parsed_message['video_id']
     video_url = 'https://www.youtube.com/watch?v=%s' % video_id
 
     try:
         # retrieve video metadata
         video = pafy.new(video_url)
-        best = video.getbest(preftype="mp4")
+        best_video = video.getbest(preftype="mp4")
+        best_audio = video.getbestaudio(preftype="m4a")
 
         # create (or overwrite) existing item in DynamoDB
         item = {
@@ -200,8 +211,10 @@ def update_video(event, context):
             'description': video.description,
             'duration': video.duration,
             'author': video.author,
-            'filesize': best.get_filesize(),
-            'url': best.url,
+            'video_filesize': best_video.get_filesize(),
+            'video_url': best_video.url,
+            'audio_filesize': best_audio.get_filesize(),
+            'audio_url': best_audio.url,
             'title': video.title,
             'thumbnail': video.thumb,
             'thumbnail2': video.bigthumb,

@@ -190,11 +190,15 @@ Testing the playlist feed via HTTP request:
 
 Testing the `playlistFeed` handler: 
 
-    sls invoke --function playlistFeed --path test_playlistFeed.json
+    sls invoke --function playlistFeed --path test_playlistFeed1.json
+
+    sls invoke --function playlistFeed --path test_playlistFeed2.json
 
 Testing the `playlistFeed` handler via local function invocation:
 
-    sls invoke local --function playlistFeed --path test_playlistFeed.json
+    sls invoke local --function playlistFeed --path test_playlistFeed1.json
+    
+    sls invoke local --function playlistFeed --path test_playlistFeed2.json
 
 
 ### Video and Audio playback URL
@@ -237,11 +241,15 @@ Testing the audio playback URL redirection via HTTP request:
 
 Testing the `videoPlaybackUrl` handler:
 
-    sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl.json
+    sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl1.json
+    
+    sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl2.json
     
 Testing the `videoPlaybackUrl` handler via local function invocation:
 
-    sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl.json
+    sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl1.json
+    
+    sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl2.json
 
 ### Update video request
 

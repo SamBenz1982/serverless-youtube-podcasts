@@ -24,11 +24,11 @@
       <link>{{ item.link }}</link>
       <pubDate>{{ item.pubDate }}</pubDate>
       <guid isPermaLink="true">{{ item.link }}</guid>
-      <enclosure url="{{ item.videoUrl }}" length="{{ item.videoLength }}" type="{{ item.videoType }}" />
-      <media:content url="{{ item.videoUrl }}" fileSize="{{ item.videoLength }}" type="{{ item.videoType }}" />
+      <enclosure url="{{ item.url }}" length="{{ item.length }}" type="{{ item.type }}" />
+      <media:content url="{{ item.url }}" fileSize="{{ item.length }}" type="{{ item.type }}" />
       <itunes:subtitle>{{ item.title }}</itunes:subtitle>
       <itunes:summary />
-      <itunes:duration>{{ item.videoDuration }}</itunes:duration>
+      <itunes:duration>{{ item.duration }}</itunes:duration>
       {% if item.thumbnail3 %}
       <itunes:image href="{{ item.thumbnail3 }}" />
       {% elif item.thumbnail2 %}
