@@ -5,6 +5,7 @@ from email.utils import formatdate
 from datetime import datetime
 
 import boto3
+import logging
 import pafy
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -17,6 +18,9 @@ METADATA_KEYS = ['id', 'description', 'duration', 'author', 'video_filesize', 'v
 
 def playlist_feed(event, context):
     """Generate RSS/Podcast XML-feed for playlist"""
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
 
     playlist_id = event['pathParameters']['id']
     playlist_url = 'https://www.youtube.com/playlist?list=%s' % playlist_id
@@ -50,6 +54,8 @@ def playlist_feed(event, context):
 
         # get list of video ids
         video_ids = map(lambda entry: entry['pafy'].videoid, list(playlist['items']))
+        logger.info("Found playlist={} videos={}".format(playlist_id, video_ids))
+
 
         # identify videos, where metadata is already stored in DynamoDB
         table = DYNAMODB.Table(os.environ['VIDEOS_TABLE'])
@@ -65,6 +71,7 @@ def playlist_feed(event, context):
             # test if metadata is up-to-date
             missing_keys = [key for key in METADATA_KEYS if key not in cached_video]
             if len(missing_keys) > 0:
+                logger.info("Missing metadata for video={} keys={}".format(video_id, missing_keys))
                 trigger_update(video_id)
                 continue
             known_video_ids.append(video_id)
@@ -112,6 +119,8 @@ def playlist_feed(event, context):
         except:
             pass
 
+        logger.info("Finished processing playlist={} video_ids={} known_videos={}".format(playlist_id, video_ids, known_video_ids))
+
         # render response
         env = Environment(loader=FileSystemLoader('.'), autoescape=select_autoescape(['xml']))
         template = env.get_template('podcast.xml')
@@ -124,7 +133,8 @@ def playlist_feed(event, context):
         }
         return response
 
-    except:
+    except Exception:
+        logging.exception('Error generating feed for playlist={}'.format(playlist_id))
         response = {
             'statusCode': 404
         }
@@ -157,6 +167,8 @@ def get_url_prefix(event):
 
 def video_playback_url(event, context):
     """Generate redirect response to playback/download URL"""
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
 
     path_id = event['pathParameters']['id'].split('.')
     if len(path_id) > 1:
@@ -182,7 +194,9 @@ def video_playback_url(event, context):
         }
         return response
 
-    except:
+    except Exception:
+        logging.exception('Error extracting playback url for video={}'.format(video_id))
+
         response = {
             'statusCode': 404
         }
@@ -192,12 +206,17 @@ def video_playback_url(event, context):
 def update_video(event, context):
     """SNS handler for updating video metadata in DynamoDB"""
 
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
     # parse SNS message
     message = event['Records'][0]['Sns']['Message']
     parsed_message = json.loads(message)
 
     video_id = parsed_message['video_id']
     video_url = 'https://www.youtube.com/watch?v=%s' % video_id
+
+    logger.info("Updating video_id={}".format(video_id))
 
     try:
         # retrieve video metadata
@@ -233,7 +252,8 @@ def update_video(event, context):
         }
         return response
 
-    except:
+    except Exception:
+        logging.exception('Error updating video={}'.format(video_id))
         pass
 
     # error
