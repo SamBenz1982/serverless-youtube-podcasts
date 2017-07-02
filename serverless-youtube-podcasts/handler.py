@@ -85,7 +85,7 @@ def playlist_feed(event, context):
             # url, type and length (size) of stream depends on format
             if flavor == 'm4a':
                 item['url'] = '%s/videos/%s.m4a' % (url_prefix, video_id)
-                item['type'] = 'audio/m4a'
+                item['type'] = 'audio/mp4'
                 item['length'] = cached_video['audio_filesize']
             else:
                 item['url'] = '%s/videos/%s.mp4' % (url_prefix, video_id)
