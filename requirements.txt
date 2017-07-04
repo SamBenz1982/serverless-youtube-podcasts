@@ -1,4 +1,4 @@
-nodeenv==1.1.2
+nodeenv==1.1.4
 boto3==1.4.4
 youtube_dl==2017.6.5
 Jinja2==2.9.6
