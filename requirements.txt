@@ -2,4 +2,4 @@ nodeenv==1.1.4
 boto3==1.4.4
 youtube_dl==2017.6.5
 Jinja2==2.9.6
--e git+https://github.com/sedden/pafy.git@a8aa123b981ff1fe58c9428b4ae57802ded93dce#egg=pafy
+pafy==0.5.3.1
