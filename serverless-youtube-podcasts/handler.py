@@ -11,9 +11,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 DYNAMODB = boto3.resource('dynamodb')
 
-METADATA_KEYS = ['id', 'description', 'duration', 'author', 'video_filesize', 'video_url',
+METADATA_KEYS = {'id', 'description', 'duration', 'author', 'video_filesize', 'video_url',
                  'audio_filesize', 'audio_url', 'title', 'thumbnail', 'thumbnail2', 'thumbnail3', 'published',
-                 'uploader', 'last_visit']
+                 'uploader', 'last_visit'}
 
 
 def playlist_feed(event, context):
@@ -23,7 +23,7 @@ def playlist_feed(event, context):
     logger.setLevel(logging.INFO)
 
     playlist_id = event['pathParameters']['id']
-    playlist_url = 'https://www.youtube.com/playlist?list=%s' % playlist_id
+    playlist_url = 'https://www.youtube.com/playlist?list={}'.format(playlist_id)
 
     # build URL prefix, e.g. 'https://---.execute-api.eu-west-1.amazonaws.com/dev'
     url_prefix = get_url_prefix(event)
@@ -33,9 +33,9 @@ def playlist_feed(event, context):
         playlist = pafy.get_playlist(playlist_url)
 
         metadata = {
-            'title': '%s: %s' % (playlist['author'], playlist['title']),
+            'title': '{}: {}'.format(playlist['author'], playlist['title']),
             'link': playlist_url,
-            'feed': '%s/playlists/%s' % (url_prefix, playlist_id),
+            'feed': '{}/playlists/{}'.format(url_prefix, playlist_id),
             'generator': 'serverless-youtube-podcasts',
             'lastBuildDate': formatdate(time.time()),
             'pubDate': formatdate(time.time()),
@@ -54,7 +54,7 @@ def playlist_feed(event, context):
 
         # get list of video ids
         video_ids = map(lambda entry: entry['pafy'].videoid, list(playlist['items']))
-        logger.info("Found playlist={} videos={}".format(playlist_id, video_ids))
+        logger.info('Found playlist={} videos={}'.format(playlist_id, video_ids))
 
 
         # identify videos, where metadata is already stored in DynamoDB
@@ -71,7 +71,7 @@ def playlist_feed(event, context):
             # test if metadata is up-to-date
             missing_keys = [key for key in METADATA_KEYS if key not in cached_video]
             if len(missing_keys) > 0:
-                logger.info("Missing metadata for video={} keys={}".format(video_id, missing_keys))
+                logger.info('Missing metadata for video={} keys={}'.format(video_id, missing_keys))
                 trigger_update(video_id)
                 continue
             known_video_ids.append(video_id)
@@ -82,7 +82,7 @@ def playlist_feed(event, context):
             # populate feed item
             item = {
                 'title': cached_video['title'],
-                'link': 'https://www.youtube.com/watch?v=%s' % video_id,
+                'link': 'https://www.youtube.com/watch?v={}'.format(video_id),
                 'pubDate': formatdate(time.mktime(published.timetuple()), usegmt=True),
                 'description': cached_video['description'],
                 'thumbnail': cached_video['thumbnail'],
@@ -91,11 +91,11 @@ def playlist_feed(event, context):
 
             # url, type and length (size) of stream depends on format
             if flavor == 'm4a':
-                item['url'] = '%s/videos/%s.m4a' % (url_prefix, video_id)
+                item['url'] = '{}/videos/{}.m4a'.format(url_prefix, video_id)
                 item['type'] = 'audio/mp4'
                 item['length'] = cached_video['audio_filesize']
             else:
-                item['url'] = '%s/videos/%s.mp4' % (url_prefix, video_id)
+                item['url'] = '{}/videos/{}.mp4'.format(url_prefix, video_id)
                 item['type'] = 'video/mp4'
                 item['length'] = cached_video['video_filesize']
 
@@ -119,7 +119,7 @@ def playlist_feed(event, context):
         except:
             pass
 
-        logger.info("Finished processing playlist={} video_ids={} known_videos={}".format(playlist_id, video_ids, known_video_ids))
+        logger.info('Finished processing playlist={} video_ids={} known_videos={}'.format(playlist_id, video_ids, known_video_ids))
 
         # render response
         env = Environment(loader=FileSystemLoader('.'), autoescape=select_autoescape(['xml']))
@@ -144,12 +144,13 @@ def playlist_feed(event, context):
 def trigger_update(video_id):
     """Trigger updating the video via SNS"""
     sns = boto3.client('sns')
+    # TODO: generate TopicArn
     aws_account_id = os.environ['AWS_ACCOUNTID']
+    aws_region = 'eu-west-1'
     message = {'video_id': video_id}
     sns.publish(
-        # TODO: generate TopicArn
-        TopicArn=('arn:aws:sns:eu-west-1:%s:updateVideo' % aws_account_id),
-        Message=json.dumps({"default": json.dumps(message)}),
+        TopicArn=('arn:aws:sns:{}:{}:updateVideo'.format(aws_region, aws_account_id)),
+        Message=json.dumps({'default': json.dumps(message)}),
         MessageStructure='json'
     )
 
@@ -159,7 +160,7 @@ def get_url_prefix(event):
     headers = event.get('headers', dict())
     request_context = event.get('requestContext', dict())
     if 'X-Forwarded-Proto' in headers and 'Host' in headers and 'stage' in request_context:
-        return headers['X-Forwarded-Proto'] + '://' + headers['Host'] + "/" + request_context['stage']
+        return headers['X-Forwarded-Proto'] + '://' + headers['Host'] + '/' + request_context['stage']
 
     # fallback
     return '/dummy'
@@ -183,9 +184,9 @@ def video_playback_url(event, context):
     try:
         # redirect with status code 302
         if video_ext == 'm4a':
-            video_stream = video.getbestaudio(preftype="m4a")
+            video_stream = video.getbestaudio(preftype='m4a')
         else:
-            video_stream = video.getbest(preftype="mp4")
+            video_stream = video.getbest(preftype='mp4')
         response = {
             'statusCode': 302,
             'headers': {
@@ -214,15 +215,15 @@ def update_video(event, context):
     parsed_message = json.loads(message)
 
     video_id = parsed_message['video_id']
-    video_url = 'https://www.youtube.com/watch?v=%s' % video_id
+    video_url = 'https://www.youtube.com/watch?v={}'.format(video_id)
 
-    logger.info("Updating video_id={}".format(video_id))
+    logger.info('Updating video_id={}'.format(video_id))
 
     try:
         # retrieve video metadata
         video = pafy.new(video_url)
-        best_video = video.getbest(preftype="mp4")
-        best_audio = video.getbestaudio(preftype="m4a")
+        best_video = video.getbest(preftype='mp4')
+        best_audio = video.getbestaudio(preftype='m4a')
 
         # create (or overwrite) existing item in DynamoDB
         item = {
