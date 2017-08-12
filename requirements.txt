@@ -1,5 +1,5 @@
 nodeenv==1.1.4
-boto3==1.4.4
+boto3==1.4.5
 youtube_dl==2017.7.9
 Jinja2==2.9.6
 pafy==0.5.3.1
