@@ -1,5 +1,13 @@
-nodeenv==1.1.4
 boto3==1.4.5
-youtube_dl==2017.7.9
+botocore==1.5.95
+docutils==0.14
+futures==3.1.1
 Jinja2==2.9.6
+jmespath==0.9.3
+MarkupSafe==1.0
+nodeenv==1.1.4
 pafy==0.5.3.1
+python-dateutil==2.6.1
+s3transfer==0.1.10
+six==1.10.0
+youtube-dl==2017.7.9
