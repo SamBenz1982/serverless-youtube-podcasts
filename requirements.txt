@@ -10,4 +10,4 @@ pafy==0.5.3.1
 python-dateutil==2.6.1
 s3transfer==0.1.10
 six==1.10.0
-youtube-dl==2017.7.9
+youtube-dl==2017.8.18
