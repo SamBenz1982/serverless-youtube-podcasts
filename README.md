@@ -50,21 +50,20 @@ Install requirements defined in `requirements.txt`
 
 #### Install Node.Js
 
-Install Node.Js version 6.10.2 via [nodeenv](https://github.com/ekalinin/nodeenv) into current virtualenv (-p)
+Install Node.Js version 6.10.3 via [nodeenv](https://github.com/ekalinin/nodeenv) into current virtualenv (-p)
 
-    nodeenv -p -n 6.10.2
-     * Install prebuilt node (6.10.2) ..... done.
+    nodeenv -p -n 6.10.3
+     * Install prebuilt node (6.10.3) ..... done.
      * Appending data to /Users/.../.../serverless-youtube-podcasts/venv/bin/activate
      * Overwriting /Users/.../.../serverless-youtube-podcasts/venv/bin/shim with new content
 
 Verify Node.Js and NPM versions:
 
     node -v
-    v6.10.2
+    v6.10.3
 
     npm -v
     3.10.10
-
 
 ### Install Serverless Framework
 
