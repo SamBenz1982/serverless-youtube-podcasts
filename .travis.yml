@@ -1,8 +1,8 @@
 language: python
 install: "pip install -r requirements.txt"
 script:
-  - nodeenv -p -n 6.10.2
-  - npm install serverless@1.16.0 -g
+  - nodeenv -p -n 6.10.3
+  - npm install serverless@1.26.0 -g
   - cd serverless-youtube-podcasts/
   - npm install --save
   - sls requirements install
