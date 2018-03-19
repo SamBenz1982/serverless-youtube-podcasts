@@ -117,7 +117,7 @@ Deploy:
 Install required python dependencies (populates `.requirements/` directory)
 
     sls requirements install
-    
+
 ### Playlist feed
 
 Testing the playlist feed via HTTP request:
@@ -134,7 +134,7 @@ Testing the playlist feed via HTTP request:
     X-Amzn-Trace-Id: sampled=0;root=1-58fbb0ee-3cd014e5f4d359cfca19856b
     X-Cache: Miss from cloudfront
     x-amzn-RequestId: 1882cbab-2793-11e7-b9e1-07e3a8ff1ed8
-    
+
     <?xml version="1.0" encoding="utf-8"?>
     <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
       <channel>
@@ -166,9 +166,9 @@ Testing the playlist feed via HTTP request:
           <itunes:duration>00:45:33</itunes:duration>
           <itunes:image href="http://i.ytimg.com/vi/GAFZcYlO5S0/default.jpg" />
         </item>
-        
+
         <!-- ... -->
-        
+
         <item>
           <title>GOTO 2015 • Mobile-First Architectures • Alexander Stigsen</title>
           <description>This presentation was recorded at GOTO Chicago 2015...</description>
@@ -182,11 +182,11 @@ Testing the playlist feed via HTTP request:
           <itunes:duration>00:30:45</itunes:duration>
           <itunes:image href="http://i.ytimg.com/vi/Xh43D4E2e2M/default.jpg" />
         </item>
-        
+
     </channel>
     </rss>
 
-Testing the `playlistFeed` handler: 
+Testing the `playlistFeed` handler:
 
     sls invoke --function playlistFeed --path test_playlistFeed1.json
 
@@ -195,16 +195,15 @@ Testing the `playlistFeed` handler:
 Testing the `playlistFeed` handler via local function invocation:
 
     sls invoke local --function playlistFeed --path test_playlistFeed1.json
-    
-    sls invoke local --function playlistFeed --path test_playlistFeed2.json
 
+    sls invoke local --function playlistFeed --path test_playlistFeed2.json
 
 ### Video and Audio playback URL
 
 Testing the video playback URL redirection via HTTP request:
 
     http https://---.execute-api.eu-west-1.amazonaws.com/dev/videos/Xh43D4E2e2M.mp4
-    
+
     HTTP/1.1 302 Found
     Connection: keep-alive
     Content-Length: 0
@@ -240,13 +239,13 @@ Testing the audio playback URL redirection via HTTP request:
 Testing the `videoPlaybackUrl` handler:
 
     sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl1.json
-    
+
     sls invoke --function videoPlaybackUrl --path test_videoPlaybackUrl2.json
-    
+
 Testing the `videoPlaybackUrl` handler via local function invocation:
 
     sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl1.json
-    
+
     sls invoke local --function videoPlaybackUrl --path test_videoPlaybackUrl2.json
 
 ### Update video request
@@ -258,4 +257,3 @@ Testing the `updateVideo` handler:
 Testing the `updateVideo` handler via local function invocation:
 
     sls invoke local --function updateVideo --path test_updateVideo.json
-    
