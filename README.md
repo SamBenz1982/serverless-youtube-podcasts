@@ -67,9 +67,9 @@ Verify Node.Js and NPM versions:
 
 ### Install Serverless Framework
 
-To install the serverless framework (currently version 1.26.0)
+To install the serverless framework (currently version 1.26.1)
 
-    npm install serverless@1.26.0 -g
+    npm install serverless@1.26.1 -g
 
 Change to `serverless-youtube-podcasts/` directory and install plugins:
 
