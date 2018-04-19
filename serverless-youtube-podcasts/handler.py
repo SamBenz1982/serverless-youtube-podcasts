@@ -1,11 +1,11 @@
+import json
+import logging
 import os
 import time
-import json
-from email.utils import formatdate
 from datetime import datetime
+from email.utils import formatdate
 
 import boto3
-import logging
 import pafy
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -55,7 +55,6 @@ def playlist_feed(event, context):
         # get list of video ids
         video_ids = map(lambda entry: entry['pafy'].videoid, list(playlist['items']))
         logger.info('Found playlist={} videos={}'.format(playlist_id, video_ids))
-
 
         # identify videos, where metadata is already stored in DynamoDB
         table = DYNAMODB.Table(os.environ['VIDEOS_TABLE'])
@@ -119,7 +118,8 @@ def playlist_feed(event, context):
         except:
             pass
 
-        logger.info('Finished processing playlist={} video_ids={} known_videos={}'.format(playlist_id, video_ids, known_video_ids))
+        logger.info('Finished processing playlist={} video_ids={} known_videos={}'.format(
+            playlist_id, video_ids, known_video_ids))
 
         # render response
         env = Environment(loader=FileSystemLoader('.'), autoescape=select_autoescape(['xml']))
