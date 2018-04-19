@@ -1,5 +1,5 @@
 language: python
-install: "pip install -r requirements.txt"
+install: "pip install -r requirements-dev.txt"
 script:
   - nodeenv -p -n 6.10.3
   - npm install serverless@1.26.1 -g

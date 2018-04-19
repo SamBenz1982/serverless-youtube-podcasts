@@ -21,7 +21,7 @@ Additionally, please create the `serverless-youtube-podcasts/serverless.env.yml`
 Ensure Python 2.7 is available:
 
     python --version
-    Python 2.7
+    Python 2.7.14
 
 Install virtualenv, if necessary:
 
@@ -46,7 +46,7 @@ Verify:
 
 Install requirements defined in `requirements.txt`
 
-    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
 
 #### Install Node.Js
 
